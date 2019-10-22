@@ -19,15 +19,18 @@
             {{ end }}
         </ul>
 
-        {{ if .PublicKeys  }}
+        {{- if .PublicKeys  }}
             <h2>PGP Keys</h2>
 
             <div id="public_keys">
-                {{ range .PublicKeys }}
+                {{- range .PublicKeys }}
                     <div class="public_key">
-                        <p>ID: {{ .ID }}</p>
-                        <p>Fingerprint: {{ .Fingerprint }}</p>
-                        <p>User ID: {{ .UserID }}</p>
+                        <p>ID: <code>{{ .ID }}</code></p>
+                        <p>Fingerprint: <code>{{ .Fingerprint }}</code></p>
+                        <p>User ID: <code>{{ .UserID }}</code></p>
+                        {{- if .Description }}
+                            <p>{{ .Description }}</p>
+                        {{ end }}
                         <pre>{{ .Value }}</pre>
                     </div>
                 {{ end }}
