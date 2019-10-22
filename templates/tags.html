@@ -1,0 +1,20 @@
+{{ define "tags.html" }}
+    <html lang="en">
+    <head>
+        {{ template "head.html" "Tags" }}
+    </head>
+    <body>
+    {{ template "menu.html" }}
+
+    <div id="content">
+        <h1>Tags</h1>
+
+        <ul class="tags">
+            {{ range . }}
+                <li><a href="{{ . }}.html">{{ . }}</a></li>
+            {{ end }}
+        </ul>
+    </div>
+    </body>
+    </html>
+{{ end }}

@@ -1,0 +1,39 @@
+{{ define "service.html" }}
+<html lang="en">
+<head>
+    {{ template "head.html" .Name }}
+</head>
+<body>
+    {{ template "menu.html" }}
+
+    <div id="content">
+        <h1 id="name">{{ .Name }}</h1>
+
+        <p id="description">{{ .Description }}</p>
+
+        <h2>Verified URLs</h2>
+
+        <ul id="urls">
+            {{ range .URLs }}
+                <li class="urls_url">{{ . }}</li>
+            {{ end }}
+        </ul>
+
+        {{ if .PublicKeys  }}
+            <h2>PGP Keys</h2>
+
+            <div id="public_keys">
+                {{ range .PublicKeys }}
+                    <div class="public_key">
+                        <p>ID: {{ .ID }}</p>
+                        <p>Fingerprint: {{ .Fingerprint }}</p>
+                        <p>User ID: {{ .UserID }}</p>
+                        <pre>{{ .Value }}</pre>
+                    </div>
+                {{ end }}
+            </div>
+        {{ end }}
+    </div>
+</body>
+</html>
+{{ end }}

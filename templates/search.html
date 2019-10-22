@@ -1,0 +1,34 @@
+{{ define "search.html" }}
+<html lang="en">
+<head>
+    {{ template "head.html" "Search results" }}
+    <script
+            src="https://code.jquery.com/jquery-3.4.1.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+</head>
+<body>
+    {{ template "menu.html" }}
+
+    <div id="content">
+        <h1>Search results for '<span id="name"></span>'</h1>
+
+        <noscript>Sorry, search requires javascript.</noscript>
+
+        <ul id="results"></ul>
+    </div>
+
+    <script>
+        let query = new URLSearchParams(new URL(window.location.href).search).get("q");
+        if ( query == null ) {
+            console.log("query is null!");
+        }
+        document.title = document.title;
+        $("#name").text(query);
+        $.get("https://api.github.com/search/code", {"q": "repo:" + oniontree.repo + " " + "path:unsorted/" + " " + query}, function(data){
+            console.log(data);
+        });
+    </script>
+</body>
+</html>
+{{end}}

@@ -1,0 +1,20 @@
+{{ define "services.html" }}
+    <html lang="en">
+    <head>
+        {{ template "head.html" "Services" }}
+    </head>
+    <body>
+    {{ template "menu.html" }}
+
+    <div id="content">
+        <h1>Services</h1>
+
+        <ul class="services">
+            {{ range . }}
+                <li><a href="{{ . }}.html">{{ . }}</a></li>
+            {{ end }}
+        </ul>
+    </div>
+    </body>
+    </html>
+{{ end }}
