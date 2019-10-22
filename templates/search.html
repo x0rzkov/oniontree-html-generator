@@ -6,6 +6,13 @@
             src="https://code.jquery.com/jquery-3.4.1.min.js"
             integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
             crossorigin="anonymous"></script>
+    <script>
+        function newResult(service){
+            return $("<li></li>", { "class": "results_result" }).append(
+                $("<a></a>", { "href": "/services/" + service + ".html" }).text(service)
+            )
+        }
+    </script>
 </head>
 <body>
     {{ template "menu.html" }}
@@ -20,14 +27,15 @@
 
     <script>
         let query = new URLSearchParams(new URL(window.location.href).search).get("q");
-        if ( query == null ) {
-            console.log("query is null!");
+        if ( query != null ) {
+            $("#name").text(query);
+            $.get("https://api.github.com/search/code", {"q": "repo:onionltd/oniontree path:unsorted/" + " " + query}, function(data){
+                for ( let i = 0; i < data["total_count"]; i++ ) {
+                    let id = data["items"][i]["name"].split('.').slice(0, -1).join('.');
+                    $("#results").append(newResult(id));
+                }
+            });
         }
-        document.title = document.title;
-        $("#name").text(query);
-        $.get("https://api.github.com/search/code", {"q": "repo:" + oniontree.repo + " " + "path:unsorted/" + " " + query}, function(data){
-            console.log(data);
-        });
     </script>
 </body>
 </html>
