@@ -12,6 +12,18 @@
                 $("<a></a>", { "href": "/services/" + service + ".html" }).text(service)
             )
         }
+
+        function newNoResult(){
+            return $("<li></li>", { "class": "results_result" }).append(
+                $("<p></p>").text("No results found for your query.")
+            )
+        }
+
+        function newSearching(){
+            return $("<li></li>", { "class": "results_result" }).append(
+                $("<p></p>").text("Searching...")
+            )
+        }
     </script>
 </head>
 <body>
@@ -29,10 +41,17 @@
         let query = new URLSearchParams(new URL(window.location.href).search).get("q");
         if ( query != null ) {
             $("#name").text(query);
+            $("#results").empty();
+            $("#results").append(newSearching());
             $.get("https://api.github.com/search/code", {"q": "repo:onionltd/oniontree path:unsorted/" + " " + query}, function(data){
+                $("#results").empty();
                 for ( let i = 0; i < data["total_count"]; i++ ) {
                     let id = data["items"][i]["name"].split('.').slice(0, -1).join('.');
                     $("#results").append(newResult(id));
+                }
+
+                if ( data["total_count"] == 0 ) {
+                    $("#results").append(newNoResult());
                 }
             });
         }
