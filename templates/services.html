@@ -10,8 +10,8 @@
         <h1>Services</h1>
 
         <ul class="services">
-            {{ range . }}
-                <li><a href="{{ . }}.html">{{ . }}</a></li>
+            {{ range $idx, $val := .Services }}
+                <li><a href="{{ index $.IDs $idx }}.html">{{ $val.Name }}</a></li>
             {{ end }}
         </ul>
     </div>

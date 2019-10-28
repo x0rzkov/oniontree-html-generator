@@ -39,15 +39,17 @@ func generateSearchHTML(t *template.Template) (string, error) {
 	return buffer.String(), nil
 }
 
-func generateTagHTML(t *template.Template, name string, services []string) (string, error) {
+func generateTagHTML(t *template.Template, name string, ids []string, services []service.Service) (string, error) {
 	log.Printf("Generate tag: tags/%s.html", name)
 	buffer := bytes.Buffer{}
 	bufio.NewWriter(&buffer)
 	data := struct {
 		Name     string
-		Services []string
+		IDs      []string
+		Services []service.Service
 	}{
 		name,
+		ids,
 		services,
 	}
 	if err := t.ExecuteTemplate(&buffer, "tag.html", data); err != nil {
@@ -66,11 +68,18 @@ func generateTagsHTML(t *template.Template, tags []string) (string, error) {
 	return buffer.String(), nil
 }
 
-func generateServicesHTML(t *template.Template, services []string) (string, error) {
+func generateServicesHTML(t *template.Template, ids []string, services []service.Service) (string, error) {
 	log.Printf("Generate services/index.html")
 	buffer := bytes.Buffer{}
 	bufio.NewWriter(&buffer)
-	if err := t.ExecuteTemplate(&buffer, "services.html", services); err != nil {
+	data := struct {
+		IDs      []string
+		Services []service.Service
+	}{
+		ids,
+		services,
+	}
+	if err := t.ExecuteTemplate(&buffer, "services.html", data); err != nil {
 		return "", err
 	}
 	return buffer.String(), nil
@@ -106,6 +115,7 @@ func main() {
 		panic(err)
 	}
 
+	// Generate index
 	html, err := generateIndexHTML(t)
 	if err != nil {
 		panic(err)
@@ -113,6 +123,8 @@ func main() {
 	if err := ioutil.WriteFile(path.Join(*output, "index.html"), []byte(html), 0644); err != nil {
 		panic(err)
 	}
+
+	// Generate search
 	html, err = generateSearchHTML(t)
 	if err != nil {
 		panic(err)
@@ -120,21 +132,14 @@ func main() {
 	if err := ioutil.WriteFile(path.Join(*output, "search.html"), []byte(html), 0644); err != nil {
 		panic(err)
 	}
-	services, err := oniontree.ListServiceFiles()
+
+	// Generate services
+	serviceIDs, err := oniontree.ListServiceFiles()
 	if err != nil {
 		panic(err)
 	}
-	if err := os.MkdirAll(path.Join(*output, "services"), 0755); err != nil {
-		panic(err)
-	}
-	html, err = generateServicesHTML(t, services)
-	if err != nil {
-		panic(err)
-	}
-	if err := ioutil.WriteFile(path.Join(*output, "services", "index.html"), []byte(html), 0644); err != nil {
-		panic(err)
-	}
-	for _, id := range services {
+	services := []service.Service{}
+	for _, id := range serviceIDs {
 		s, err := oniontree.GetServiceFile(id)
 		if err != nil {
 			panic(err)
@@ -146,6 +151,17 @@ func main() {
 		if err := ioutil.WriteFile(path.Join(*output, "services", id+".html"), []byte(html), 0644); err != nil {
 			panic(err)
 		}
+		services = append(services, s)
+	}
+	if err := os.MkdirAll(path.Join(*output, "services"), 0755); err != nil {
+		panic(err)
+	}
+	html, err = generateServicesHTML(t, serviceIDs, services)
+	if err != nil {
+		panic(err)
+	}
+	if err := ioutil.WriteFile(path.Join(*output, "services", "index.html"), []byte(html), 0644); err != nil {
+		panic(err)
 	}
 
 	// Generate tags
@@ -163,13 +179,20 @@ func main() {
 	if err := ioutil.WriteFile(path.Join(*output, "tags", "index.html"), []byte(html), 0644); err != nil {
 		panic(err)
 	}
-	// Generate a file for each tag
 	for _, tag := range tags {
-		services, err := oniontree.ListTag(tag)
+		serviceIDs, err := oniontree.ListTag(tag)
 		if err != nil {
 			panic(err)
 		}
-		html, err := generateTagHTML(t, tag, services)
+		services := []service.Service{}
+		for _, id := range serviceIDs {
+			s, err := oniontree.GetServiceFile(id)
+			if err != nil {
+				panic(err)
+			}
+			services = append(services, s)
+		}
+		html, err := generateTagHTML(t, tag, serviceIDs, services)
 		if err != nil {
 			panic(err)
 		}
