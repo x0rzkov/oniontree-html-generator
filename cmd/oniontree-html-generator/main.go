@@ -12,6 +12,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"strings"
 )
 
 func loadTemplates(dir string) (*template.Template, error) {
@@ -72,12 +73,19 @@ func generateServicesHTML(t *template.Template, ids []string, services []service
 	log.Printf("Generate services/index.html")
 	buffer := bytes.Buffer{}
 	bufio.NewWriter(&buffer)
-	data := struct {
-		IDs      []string
-		Services []service.Service
-	}{
-		ids,
-		services,
+	data := make(map[string][]struct {
+		ID      string
+		Service service.Service
+	})
+	for idx, s := range services {
+		letter := strings.ToUpper(string(s.Name[0]))
+		data[letter] = append(data[letter], struct {
+			ID      string
+			Service service.Service
+		}{
+			ID:      ids[idx],
+			Service: s,
+		})
 	}
 	if err := t.ExecuteTemplate(&buffer, "services.html", data); err != nil {
 		return "", err

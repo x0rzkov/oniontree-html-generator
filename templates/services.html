@@ -9,11 +9,14 @@
     <div id="content">
         <h1>Services</h1>
 
-        <ul class="services">
-            {{ range $idx, $val := .Services }}
-                <li><a href="{{ index $.IDs $idx }}.html">{{ $val.Name }}</a></li>
+        {{ range $letter, $data := . }}
+            <h3>{{ $letter }}</h3>
+            <hr>
+
+            {{ range $data }}
+                <p><a href="{{ .ID }}.html">{{ .Service.Name }}</a></p>
             {{ end }}
-        </ul>
+        {{ end }}
     </div>
     </body>
     </html>
