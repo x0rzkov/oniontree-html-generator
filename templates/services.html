@@ -11,10 +11,21 @@
 
         {{ range $letter, $data := . }}
             <h3>{{ $letter }}</h3>
-            <hr>
 
             {{ range $data }}
-                <p><a href="{{ .ID }}.html">{{ .Service.Name }}</a></p>
+                <p>
+                    <a href="{{ .ID }}.html">{{ .Service.Name }}</a>
+                    &nbsp;
+                    {{ if .Service.URLs }}
+                        <a href="{{ .ID }}.html#urls">url</a>
+                    {{ end }}
+                    {{ if and .Service.URLs .Service.PublicKeys }}
+                        &bullet;
+                    {{ end }}
+                    {{ if .Service.PublicKeys }}
+                        <a href="{{ .ID }}.html#pgp">pgp</a>
+                    {{ end }}
+                </p>
             {{ end }}
         {{ end }}
     </div>
