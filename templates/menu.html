@@ -1,17 +1,19 @@
 {{ define "menu.html" }}
 <div id="menu">
-    <ul>
-        <li id="logo"><a href="/">Oniontree</a></li>
-        <li>&nbsp;</li>
-        <li><a href="/services">Services</a></li>
-        <li>&nbsp;</li>
-        <li><a href="/tags">Tags</a></li>
-        <li>&nbsp;</li>
-        <li><a href="https://github.com/onionltd/oniontree">Download</a></li>
-    </ul>
+    <div>
+        <a href="/" id="logo">Oniontree</a>
+        &nbsp;
+        <a href="/services">Services</a>
+        &nbsp;
+        <a href="/tags">Tags</a>
+        &nbsp;
+        <a href="https://github.com/onionltd/oniontree">Download</a>
+    </div>
 
-    <form action="/search.html">
-        <input type="text" name="q" value="" placeholder="Search">
-    </form>
+    <div class="search">
+        <form action="/search.html">
+            <input type="text" name="q" value="" placeholder="Search">
+        </form>
+    </div>
 </div>
 {{ end }}
