@@ -70,6 +70,27 @@ func (s Source) GetServiceFile(id string) (service.Service, error) {
 	return serv, nil
 }
 
+func (s Source) ListServiceTags(id string) ([]string, error) {
+	tags, err := s.ListTags()
+	if err != nil {
+		return []string{}, err
+	}
+
+	serviceTags := []string{}
+	for _, tag := range tags {
+		services, err := s.ListTag(tag)
+		if err != nil {
+			return []string{}, err
+		}
+		for _, service := range services {
+			if service == id {
+				serviceTags = append(serviceTags, tag)
+			}
+		}
+	}
+	return serviceTags, nil
+}
+
 func trimSuffix(name string) string {
 	return strings.TrimSuffix(name, filepath.Ext(name))
 }

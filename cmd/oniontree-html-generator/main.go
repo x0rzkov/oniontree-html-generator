@@ -107,11 +107,18 @@ func generateServicesHTML(t *template.Template, ids []string, services []service
 	return buffer.String(), nil
 }
 
-func generateServiceHTML(t *template.Template, s service.Service) (string, error) {
+func generateServiceHTML(t *template.Template, tags []string, s service.Service) (string, error) {
 	log.Printf("Generate service: %s", s.Name)
 	buffer := bytes.Buffer{}
 	bufio.NewWriter(&buffer)
-	if err := t.ExecuteTemplate(&buffer, "service.html", s); err != nil {
+	data := struct {
+		Tags    []string
+		Service service.Service
+	}{
+		tags,
+		s,
+	}
+	if err := t.ExecuteTemplate(&buffer, "service.html", data); err != nil {
 		return "", err
 	}
 	return buffer.String(), nil
@@ -166,7 +173,11 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		html, err := generateServiceHTML(t, s)
+		tags, err := oniontree.ListServiceTags(id)
+		if err != nil {
+			panic(err)
+		}
+		html, err := generateServiceHTML(t, tags, s)
 		if err != nil {
 			panic(err)
 		}

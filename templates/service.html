@@ -2,29 +2,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {{ template "head.html" .Name }}
+    {{ template "head.html" .Service.Name }}
 </head>
 <body>
     {{ template "menu.html" }}
 
     <div id="content">
-        <h1 id="name">{{ .Name }}</h1>
+        <h1 id="name">{{ .Service.Name }}</h1>
 
-        <p id="description">{{ .Description }}</p>
+        <p id="description">{{ .Service.Description }}</p>
+
+        <p id="tags">Tags: {{ range .Tags }} <a href="../tags/{{ . }}.html">{{ . }}</a> {{ end }}</p>
 
         <h2 id="urls">Verified URLs</h2>
 
         <ul id="urls">
-            {{ range .URLs }}
+            {{ range .Service.URLs }}
                 <li class="urls_url">{{ . }}</li>
             {{ end }}
         </ul>
 
-        {{- if .PublicKeys  }}
+        {{- if .Service.PublicKeys  }}
             <h2 id="pgp">PGP Keys</h2>
 
             <div id="public_keys">
-                {{- range .PublicKeys }}
+                {{- range .Service.PublicKeys }}
                     <div id="pgp-{{ .ID }}" class="public_key">
                         <p>ID: <code>{{ .ID }}</code></p>
                         <p>Fingerprint: <code>{{ .Fingerprint }}</code></p>
