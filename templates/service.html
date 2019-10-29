@@ -12,7 +12,9 @@
 
         <p id="description">{{ .Service.Description }}</p>
 
-        <p id="tags">Tags: {{ range .Tags }} <a href="../tags/{{ . }}.html">{{ . }}</a> {{ end }}</p>
+        {{- if .Tags }}
+            <p id="tags">Tags: {{ range .Tags }} <a href="../tags/{{ . }}.html">{{ . }}</a> {{ end }}</p>
+        {{ end }}
 
         <h2 id="urls">Verified URLs</h2>
 
