@@ -45,13 +45,27 @@ func generateTagHTML(t *template.Template, name string, ids []string, services [
 	buffer := bytes.Buffer{}
 	bufio.NewWriter(&buffer)
 	data := struct {
-		Name     string
-		IDs      []string
-		Services []service.Service
+		Name string
+		Data map[string][]struct {
+			ID      string
+			Service service.Service
+		}
 	}{
 		name,
-		ids,
-		services,
+		make(map[string][]struct {
+			ID      string
+			Service service.Service
+		}),
+	}
+	for idx, s := range services {
+		letter := strings.ToUpper(string(s.Name[0]))
+		data.Data[letter] = append(data.Data[letter], struct {
+			ID      string
+			Service service.Service
+		}{
+			ID:      ids[idx],
+			Service: s,
+		})
 	}
 	if err := t.ExecuteTemplate(&buffer, "tag.html", data); err != nil {
 		return "", err
