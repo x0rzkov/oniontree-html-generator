@@ -18,9 +18,12 @@
 
         <h2 id="urls">Verified URLs</h2>
 
-        <ul id="urls">
+        <ul class="urls">
             {{ range .Service.URLs }}
-                <li class="urls_url">{{ . }}</li>
+                <li class="urls_url">
+                    <img src="http://qf6ycc37agiwvunc757l4427guhdawqngjqs4bfn3kenwszpjnk53sqd.onion/png/{{ . | urlquery }}" class="status_beam" alt="&bullet;">
+                    {{ . }}
+                </li>
             {{ end }}
         </ul>
 
