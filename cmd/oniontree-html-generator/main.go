@@ -20,16 +20,6 @@ func loadTemplates(dir string) (*template.Template, error) {
 	return template.ParseGlob(dir + "/*.*")
 }
 
-func generateIndexHTML(t *template.Template) (string, error) {
-	log.Printf("Generate index.html")
-	buffer := bytes.Buffer{}
-	bufio.NewWriter(&buffer)
-	if err := t.ExecuteTemplate(&buffer, "index.html", nil); err != nil {
-		return "", err
-	}
-	return buffer.String(), nil
-}
-
 func generateSearchHTML(t *template.Template) (string, error) {
 	log.Printf("Generate search.html")
 	buffer := bytes.Buffer{}
@@ -144,17 +134,8 @@ func main() {
 		panic(err)
 	}
 
-	// Generate index
-	html, err := generateIndexHTML(t)
-	if err != nil {
-		panic(err)
-	}
-	if err := ioutil.WriteFile(path.Join(*output, "index.html"), []byte(html), 0644); err != nil {
-		panic(err)
-	}
-
 	// Generate search
-	html, err = generateSearchHTML(t)
+	html, err := generateSearchHTML(t)
 	if err != nil {
 		panic(err)
 	}
@@ -165,6 +146,9 @@ func main() {
 	// Generate services
 	serviceIDs, err := oniontree.ListServiceFiles()
 	if err != nil {
+		panic(err)
+	}
+	if err := os.MkdirAll(path.Join(*output, "services"), 0755); err != nil {
 		panic(err)
 	}
 	services := []service.Service{}
@@ -186,14 +170,11 @@ func main() {
 		}
 		services = append(services, s)
 	}
-	if err := os.MkdirAll(path.Join(*output, "services"), 0755); err != nil {
-		panic(err)
-	}
 	html, err = generateServicesHTML(t, serviceIDs, services)
 	if err != nil {
 		panic(err)
 	}
-	if err := ioutil.WriteFile(path.Join(*output, "services", "index.html"), []byte(html), 0644); err != nil {
+	if err := ioutil.WriteFile(path.Join(*output, "index.html"), []byte(html), 0644); err != nil {
 		panic(err)
 	}
 

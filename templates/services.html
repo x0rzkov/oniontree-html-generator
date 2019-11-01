@@ -8,6 +8,17 @@
     {{ template "menu.html" }}
 
     <div id="content">
+        <h1>Welcome!</h1>
+
+        <p><em>Onion Limited's Oniontree</em> is a repository of Tor hidden services. Data are licensed under
+            <code>CC0 1.0</code>, distributed in a machine readable format.</p>
+
+        <p>This repository is work of dedicated volunteers. We are not affiliated with any of the services listed here,
+            nor we provide any type of endorsement. This work is published in hope it will be useful for security researchers,
+            journalists and anyone who needs machine-readable data.</p>
+
+        <p>Use this site to find onion addresses, PGP keys and other information about Tor hidden services.</p>
+
         <h1>Services</h1>
 
         {{ range $letter, $data := . }}
