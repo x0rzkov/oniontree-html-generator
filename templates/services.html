@@ -26,16 +26,16 @@
 
             {{ range $data }}
                 <p>
-                    <a href="{{ .ID }}.html">{{ .Service.Name }}</a>
+                    <a href="./services/{{ .ID }}.html">{{ .Service.Name }}</a>
                     &nbsp;
                     {{ if .Service.URLs }}
-                        <a href="{{ .ID }}.html#urls">url</a>
+                        <a href="./services/{{ .ID }}.html#urls">url</a>
                     {{ end }}
                     {{ if and .Service.URLs .Service.PublicKeys }}
                         &bullet;
                     {{ end }}
                     {{ if .Service.PublicKeys }}
-                        <a href="{{ .ID }}.html#pgp">pgp</a>
+                        <a href="./services/{{ .ID }}.html#pgp">pgp</a>
                     {{ end }}
                 </p>
             {{ end }}
