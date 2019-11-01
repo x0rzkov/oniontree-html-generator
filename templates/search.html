@@ -44,7 +44,7 @@
             $("#name").text(query);
             $("#results").empty();
             $("#results").append(newSearching());
-            $.get("https://api.github.com/search/code", {"q": "repo:onionltd/oniontree path:unsorted/" + " " + query}, function(data){
+            $.get("https://api.github.com/search/code", {"q": "repo:onionltd/onionltd.github.io path:services/" + " " + query}, function(data){
                 $("#results").empty();
                 for ( let i = 0; i < data["total_count"]; i++ ) {
                     let id = data["items"][i]["name"].split('.').slice(0, -1).join('.');
