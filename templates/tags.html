@@ -10,11 +10,13 @@
     <div id="content">
         <h1>Tags</h1>
 
-        <ul class="tags">
-            {{ range . }}
-                <li><a href="{{ . }}.html">{{ . }}</a></li>
+        {{ range $letter, $data := . }}
+            <h3>{{ $letter }}</h3>
+
+            {{ range $data }}
+                <p><a href="{{ . }}.html">{{ . }}</a></p>
             {{ end }}
-        </ul>
+        {{ end }}
     </div>
     </body>
     </html>

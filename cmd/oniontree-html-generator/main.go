@@ -67,7 +67,12 @@ func generateTagsHTML(t *template.Template, tags []string) (string, error) {
 	log.Printf("Generate tags/index.html")
 	buffer := bytes.Buffer{}
 	bufio.NewWriter(&buffer)
-	if err := t.ExecuteTemplate(&buffer, "tags.html", tags); err != nil {
+	data := make(map[string][]string)
+	for _, tag := range tags {
+		letter := strings.ToUpper(string(tag[0]))
+		data[letter] = append(data[letter], tag)
+	}
+	if err := t.ExecuteTemplate(&buffer, "tags.html", data); err != nil {
 		return "", err
 	}
 	return buffer.String(), nil
