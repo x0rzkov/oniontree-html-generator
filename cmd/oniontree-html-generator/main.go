@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/onionltd/onionltd.github.io-generator/pkg/oniontree/local"
@@ -102,14 +103,16 @@ func generateServicesHTML(t *template.Template, ids []string, services []service
 	return buffer.String(), nil
 }
 
-func generateServiceHTML(t *template.Template, tags []string, s service.Service) (string, error) {
+func generateServiceHTML(t *template.Template, id string, tags []string, s service.Service) (string, error) {
 	log.Printf("Generate service: %s", s.Name)
 	buffer := bytes.Buffer{}
 	bufio.NewWriter(&buffer)
 	data := struct {
+		ID      string
 		Tags    []string
 		Service service.Service
 	}{
+		id,
 		tags,
 		s,
 	}
@@ -117,6 +120,15 @@ func generateServiceHTML(t *template.Template, tags []string, s service.Service)
 		return "", err
 	}
 	return buffer.String(), nil
+}
+
+func generateServiceJSON(s service.Service) (string, error) {
+	log.Printf("Generate service JSON: %s", s.Name)
+	buff, err := json.Marshal(s)
+	if err != nil {
+		return "", err
+	}
+	return string(buff), nil
 }
 
 func main() {
@@ -166,11 +178,18 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		html, err := generateServiceHTML(t, tags, s)
+		html, err := generateServiceHTML(t, id, tags, s)
 		if err != nil {
 			panic(err)
 		}
 		if err := ioutil.WriteFile(path.Join(*output, "services", id+".html"), []byte(html), 0644); err != nil {
+			panic(err)
+		}
+		json, err := generateServiceJSON(s)
+		if err != nil {
+			panic(err)
+		}
+		if err := ioutil.WriteFile(path.Join(*output, "services", id+".json"), []byte(json), 0644); err != nil {
 			panic(err)
 		}
 		services = append(services, s)
