@@ -46,12 +46,19 @@
             $("#results").append(newSearching());
             $.get("https://api.github.com/search/code", {"q": "repo:onionltd/onionltd.github.io path:services/" + " " + query}, function(data){
                 $("#results").empty();
+
+                let results = [];
                 for ( let i = 0; i < data["total_count"]; i++ ) {
                     let id = data["items"][i]["name"].split('.').slice(0, -1).join('.');
-                    $("#results").append(newResult(id));
+                    results.push(id);
                 }
 
-                if ( data["total_count"] == 0 ) {
+                results = $.unique(results);
+                for ( let i = 0; i < results.length; i++ ) {
+                    $("#results").append(newResult(results[i]));
+                }
+
+                if ( results.length == 0 ) {
                     $("#results").append(newNoResult());
                 }
             });
