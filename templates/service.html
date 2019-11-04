@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
     {{ template "head.html" .Service.Name }}
+    <meta name="description" content="{{- if .Service.Description }}{{ .Service.Description }}{{ else }}Oniontree is a repository of Tor hidden services. Use this site to find onion addresses, PGP keys and other useful information. All data are open source, available in a machine readable format.{{ end }}">
 </head>
 <body>
     {{ template "menu.html" }}

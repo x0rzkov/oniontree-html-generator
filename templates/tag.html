@@ -3,6 +3,7 @@
     <html lang="en">
     <head>
         {{ template "head.html" (printf "Services tagged '%s'" .Name) }}
+        <meta name="description" content="Browse services tagged '{{ .Name }}'.">
     </head>
     <body>
     {{ template "menu.html" }}
