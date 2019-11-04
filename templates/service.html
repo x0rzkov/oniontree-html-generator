@@ -21,7 +21,7 @@
 
         <ul class="urls">
             {{ range .Service.URLs }}
-                <li class="urls_url">
+                <li class="urls_url text-ellipsis">
                     <img src="https://hxxpbeam.danwin1210.me/png/{{ . | urlquery }}" class="status_beam" alt="&bullet;">
                     {{ . }}
                 </li>
@@ -34,9 +34,9 @@
             <div id="public_keys">
                 {{- range .Service.PublicKeys }}
                     <div id="pgp-{{ .ID }}" class="public_key">
-                        <p>ID: <code>{{ .ID }}</code></p>
-                        <p>Fingerprint: <code>{{ .Fingerprint }}</code></p>
-                        <p>User ID: <code>{{ .UserID }}</code></p>
+                        <p>ID: {{ .ID }}</p>
+                        <p class="text-ellipsis">Fingerprint: {{ .Fingerprint }}</p>
+                        <p>User ID: {{ .UserID }}</p>
                         {{- if .Description }}
                             <p>{{ .Description }}</p>
                         {{ end }}
