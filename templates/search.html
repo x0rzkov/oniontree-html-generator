@@ -54,7 +54,10 @@
                     results.push(id);
                 }
 
-                results = $.unique(results);
+                results = results.filter(function(value, index, self){
+                    return self.indexOf(value) === index;
+                });
+
                 for ( let i = 0; i < results.length; i++ ) {
                     $("#results").append(newResult(results[i]));
                 }
