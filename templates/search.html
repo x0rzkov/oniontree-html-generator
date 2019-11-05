@@ -49,7 +49,7 @@
                 $("#results").empty();
 
                 let results = [];
-                for ( let i = 0; i < data["total_count"]; i++ ) {
+                for ( let i = 0; i < data["items"].length; i++ ) {
                     let id = data["items"][i]["name"].split('.').slice(0, -1).join('.');
                     results.push(id);
                 }
