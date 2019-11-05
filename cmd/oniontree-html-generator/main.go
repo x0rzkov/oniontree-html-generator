@@ -31,6 +31,16 @@ func generateSearchHTML(t *template.Template) (string, error) {
 	return buffer.String(), nil
 }
 
+func generateAPIHTML(t *template.Template) (string, error) {
+	log.Printf("Generate api.html")
+	buffer := bytes.Buffer{}
+	bufio.NewWriter(&buffer)
+	if err := t.ExecuteTemplate(&buffer, "api.html", nil); err != nil {
+		return "", err
+	}
+	return buffer.String(), nil
+}
+
 func generateTagHTML(t *template.Template, name string, ids []string, services []service.Service) (string, error) {
 	log.Printf("Generate tag: tags/%s.html", name)
 	buffer := bytes.Buffer{}
@@ -157,6 +167,15 @@ func main() {
 		panic(err)
 	}
 	if err := ioutil.WriteFile(path.Join(*output, "search.html"), []byte(html), 0644); err != nil {
+		panic(err)
+	}
+
+	// Generate api docs
+	html, err = generateAPIHTML(t)
+	if err != nil {
+		panic(err)
+	}
+	if err := ioutil.WriteFile(path.Join(*output, "api.html"), []byte(html), 0644); err != nil {
 		panic(err)
 	}
 

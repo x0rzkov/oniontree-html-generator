@@ -1,0 +1,24 @@
+{{ define "api.html" }}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        {{ template "head.html" "API" }}
+        <meta name="description" content="Oniontree is a repository of Tor hidden services. Use this site to find onion addresses, PGP keys and other useful information. All data are open source, available in a machine readable format.">
+    </head>
+    <body>
+    {{ template "menu.html" }}
+
+    <div id="content">
+        <h1>API</h1>
+
+        <p>Service's data are available as JSON. You can access them by replacing .html with .json in URL.</p>
+
+        <h3>Example</h3>
+
+        <pre>$ curl https://onionltd.github.io/services/nytimes.json</pre>
+
+        This site is hosted on GitHub pages, so as long as GitHub supports CORS, the API should support it too.
+    </div>
+    </body>
+    </html>
+{{ end }}
