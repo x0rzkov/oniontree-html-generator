@@ -42,6 +42,11 @@
     {{ template "footer.html" }}
 
     <script>
+        // Get ID from filename
+        function getID(name) {
+            return name.split('.').slice(0, -1).join('.');
+        }
+
         let query = new URLSearchParams(new URL(window.location.href).search).get("q");
         if ( query != null ) {
             $("#name").text(query);
@@ -52,8 +57,7 @@
 
                 let results = [];
                 for ( let i = 0; i < data["items"].length; i++ ) {
-                    let id = data["items"][i]["name"].split('.').slice(0, -1).join('.');
-                    results.push(id);
+                    results.push(getID(data["items"][i]["name"]));
                 }
 
                 results = results.filter(function(value, index, self){
@@ -66,6 +70,12 @@
 
                 if ( results.length == 0 ) {
                     $("#results").append(newNoResult());
+                    return;
+                } else if ( results.length == 1 ) {
+                    console.log("result score:", data["items"][0]["score"]);
+                    if ( data["items"][0]["score"] > 10 ) {
+                        window.location.href = "/services/" + getID(data["items"][0]["name"]) + ".html";
+                    }
                 }
             });
         }
