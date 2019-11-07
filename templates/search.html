@@ -74,7 +74,7 @@
                 } else if ( results.length == 1 ) {
                     console.log("result score:", data["items"][0]["score"]);
                     if ( data["items"][0]["score"] > 10 ) {
-                        window.location.href = "/services/" + getID(data["items"][0]["name"]) + ".html";
+                        window.location.replace("/services/" + getID(data["items"][0]["name"]) + ".html");
                     }
                 }
             });
