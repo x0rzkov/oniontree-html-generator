@@ -39,6 +39,8 @@
         <ul id="results"></ul>
     </div>
 
+    {{ template "footer.html" }}
+
     <script>
         let query = new URLSearchParams(new URL(window.location.href).search).get("q");
         if ( query != null ) {
