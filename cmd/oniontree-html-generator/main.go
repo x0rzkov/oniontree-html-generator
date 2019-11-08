@@ -21,27 +21,33 @@ func loadTemplates(dir string) (*template.Template, error) {
 	return template.ParseGlob(dir + "/*.*")
 }
 
-func generateSearchHTML(t *template.Template) (string, error) {
+func generateSearchHTML(output string, t *template.Template) error {
 	log.Printf("Generate search.html")
 	buffer := bytes.Buffer{}
 	bufio.NewWriter(&buffer)
 	if err := t.ExecuteTemplate(&buffer, "search.html", nil); err != nil {
-		return "", err
+		return err
 	}
-	return buffer.String(), nil
+	if err := ioutil.WriteFile(path.Join(output, "search.html"), buffer.Bytes(), 0644); err != nil {
+		return err
+	}
+	return nil
 }
 
-func generateAPIHTML(t *template.Template) (string, error) {
+func generateAPIHTML(output string, t *template.Template) error {
 	log.Printf("Generate api.html")
 	buffer := bytes.Buffer{}
 	bufio.NewWriter(&buffer)
 	if err := t.ExecuteTemplate(&buffer, "api.html", nil); err != nil {
-		return "", err
+		return err
 	}
-	return buffer.String(), nil
+	if err := ioutil.WriteFile(path.Join(output, "api.html"), buffer.Bytes(), 0644); err != nil {
+		return err
+	}
+	return nil
 }
 
-func generateTagHTML(t *template.Template, name string, ids []string, services []service.Service) (string, error) {
+func generateTagHTML(output string, t *template.Template, name string, ids []string, services []service.Service) error {
 	log.Printf("Generate tag: tags/%s.html", name)
 	buffer := bytes.Buffer{}
 	bufio.NewWriter(&buffer)
@@ -69,12 +75,15 @@ func generateTagHTML(t *template.Template, name string, ids []string, services [
 		})
 	}
 	if err := t.ExecuteTemplate(&buffer, "tag.html", data); err != nil {
-		return "", err
+		return err
 	}
-	return buffer.String(), nil
+	if err := ioutil.WriteFile(path.Join(output, "tags", name+".html"), buffer.Bytes(), 0644); err != nil {
+		return err
+	}
+	return nil
 }
 
-func generateTagsHTML(t *template.Template, tags []string) (string, error) {
+func generateTagsHTML(output string, t *template.Template, tags []string) error {
 	log.Printf("Generate tags/index.html")
 	buffer := bytes.Buffer{}
 	bufio.NewWriter(&buffer)
@@ -84,12 +93,18 @@ func generateTagsHTML(t *template.Template, tags []string) (string, error) {
 		data[letter] = append(data[letter], tag)
 	}
 	if err := t.ExecuteTemplate(&buffer, "tags.html", data); err != nil {
-		return "", err
+		return err
 	}
-	return buffer.String(), nil
+	if err := os.MkdirAll(path.Join(output, "tags"), 0755); err != nil {
+		return err
+	}
+	if err := ioutil.WriteFile(path.Join(output, "tags", "index.html"), buffer.Bytes(), 0644); err != nil {
+		return err
+	}
+	return nil
 }
 
-func generateServicesHTML(t *template.Template, ids []string, services []service.Service) (string, error) {
+func generateServicesHTML(output string, t *template.Template, ids []string, services []service.Service) error {
 	log.Printf("Generate services/index.html")
 	buffer := bytes.Buffer{}
 	bufio.NewWriter(&buffer)
@@ -108,13 +123,16 @@ func generateServicesHTML(t *template.Template, ids []string, services []service
 		})
 	}
 	if err := t.ExecuteTemplate(&buffer, "services.html", data); err != nil {
-		return "", err
+		return err
 	}
-	return buffer.String(), nil
+	if err := ioutil.WriteFile(path.Join(output, "index.html"), buffer.Bytes(), 0644); err != nil {
+		return err
+	}
+	return nil
 }
 
-func generateServiceHTML(t *template.Template, id string, tags []string, s service.Service) (string, error) {
-	log.Printf("Generate service: %s", s.Name)
+func generateServiceHTML(output string, t *template.Template, id string, s service.Service, tags []string) error {
+	log.Printf("Generate service: services/%s.html", id)
 	buffer := bytes.Buffer{}
 	bufio.NewWriter(&buffer)
 	data := struct {
@@ -127,18 +145,27 @@ func generateServiceHTML(t *template.Template, id string, tags []string, s servi
 		s,
 	}
 	if err := t.ExecuteTemplate(&buffer, "service.html", data); err != nil {
-		return "", err
+		return err
 	}
-	return buffer.String(), nil
+	if err := os.MkdirAll(path.Join(output, "services"), 0755); err != nil {
+		return err
+	}
+	if err := ioutil.WriteFile(path.Join(output, "services", id+".html"), buffer.Bytes(), 0644); err != nil {
+		return err
+	}
+	return nil
 }
 
-func generateServiceJSON(s service.Service) (string, error) {
-	log.Printf("Generate service JSON: %s", s.Name)
+func generateServiceJSON(output string, id string, s service.Service) error {
+	log.Printf("Generate service: services/%s.json", id)
 	buff, err := json.Marshal(s)
 	if err != nil {
-		return "", err
+		return err
 	}
-	return string(buff), nil
+	if err := ioutil.WriteFile(path.Join(output, "services", id+".json"), buff, 0644); err != nil {
+		return err
+	}
+	return nil
 }
 
 func main() {
@@ -162,29 +189,18 @@ func main() {
 	}
 
 	// Generate search
-	html, err := generateSearchHTML(t)
-	if err != nil {
-		panic(err)
-	}
-	if err := ioutil.WriteFile(path.Join(*output, "search.html"), []byte(html), 0644); err != nil {
+	if err = generateSearchHTML(*output, t); err != nil {
 		panic(err)
 	}
 
 	// Generate api docs
-	html, err = generateAPIHTML(t)
-	if err != nil {
-		panic(err)
-	}
-	if err := ioutil.WriteFile(path.Join(*output, "api.html"), []byte(html), 0644); err != nil {
+	if err = generateAPIHTML(*output, t); err != nil {
 		panic(err)
 	}
 
 	// Generate services
 	serviceIDs, err := oniontree.ListServiceFiles()
 	if err != nil {
-		panic(err)
-	}
-	if err := os.MkdirAll(path.Join(*output, "services"), 0755); err != nil {
 		panic(err)
 	}
 	services := []service.Service{}
@@ -197,27 +213,15 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		html, err := generateServiceHTML(t, id, tags, s)
-		if err != nil {
+		if err := generateServiceHTML(*output, t, id, s, tags); err != nil {
 			panic(err)
 		}
-		if err := ioutil.WriteFile(path.Join(*output, "services", id+".html"), []byte(html), 0644); err != nil {
-			panic(err)
-		}
-		json, err := generateServiceJSON(s)
-		if err != nil {
-			panic(err)
-		}
-		if err := ioutil.WriteFile(path.Join(*output, "services", id+".json"), []byte(json), 0644); err != nil {
+		if err := generateServiceJSON(*output, id, s); err != nil {
 			panic(err)
 		}
 		services = append(services, s)
 	}
-	html, err = generateServicesHTML(t, serviceIDs, services)
-	if err != nil {
-		panic(err)
-	}
-	if err := ioutil.WriteFile(path.Join(*output, "index.html"), []byte(html), 0644); err != nil {
+	if err = generateServicesHTML(*output, t, serviceIDs, services); err != nil {
 		panic(err)
 	}
 
@@ -226,14 +230,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	if err := os.MkdirAll(path.Join(*output, "tags"), 0755); err != nil {
-		panic(err)
-	}
-	html, err = generateTagsHTML(t, tags)
-	if err != nil {
-		panic(err)
-	}
-	if err := ioutil.WriteFile(path.Join(*output, "tags", "index.html"), []byte(html), 0644); err != nil {
+	if err = generateTagsHTML(*output, t, tags); err != nil {
 		panic(err)
 	}
 	for _, tag := range tags {
@@ -249,11 +246,7 @@ func main() {
 			}
 			services = append(services, s)
 		}
-		html, err := generateTagHTML(t, tag, serviceIDs, services)
-		if err != nil {
-			panic(err)
-		}
-		if err := ioutil.WriteFile(path.Join(*output, "tags", tag+".html"), []byte(html), 0644); err != nil {
+		if err := generateTagHTML(*output, t, tag, serviceIDs, services); err != nil {
 			panic(err)
 		}
 	}
