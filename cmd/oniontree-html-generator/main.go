@@ -168,6 +168,17 @@ func generateServiceJSON(output string, id string, s service.Service) error {
 	return nil
 }
 
+func generatePGPTXT(output string, k service.PublicKey) error {
+	log.Printf("Generate service: keys/%s.txt", k.ID)
+	if err := os.MkdirAll(path.Join(output, "keys"), 0755); err != nil {
+		return err
+	}
+	if err := ioutil.WriteFile(path.Join(output, "keys", k.ID+".txt"), []byte(k.Value), 0644); err != nil {
+		return err
+	}
+	return nil
+}
+
 func main() {
 	templates := flag.String("templates", "", "Directory with templates")
 	data := flag.String("oniontree", "", "Oniontree directory")
@@ -218,6 +229,11 @@ func main() {
 		}
 		if err := generateServiceJSON(*output, id, s); err != nil {
 			panic(err)
+		}
+		for _, k := range s.PublicKeys {
+			if err := generatePGPTXT(*output, k); err != nil {
+				panic(err)
+			}
 		}
 		services = append(services, s)
 	}
