@@ -11,13 +11,24 @@
     <div id="content">
         <h1>API</h1>
 
+        <p>This site is hosted on GitHub pages, so as long as GitHub supports CORS, the API should support it too.</p>
+
+        <h2>Services</h2>
+
         <p>Service's data are available as JSON. You can access them by replacing .html with .json in URL.</p>
 
         <h3>Example</h3>
 
         <pre>$ curl https://onionltd.github.io/services/nytimes.json</pre>
 
-        <p>This site is hosted on GitHub pages, so as long as GitHub supports CORS, the API should support it too.</p>
+        <h2>PGP keys</h2>
+
+        <p>You can download PGP keys, if you know their ID.</p>
+
+        <h3>Example</h3>
+
+        <pre>$ curl https://onionltd.github.io/keys/E9971784146CCD94.txt</pre>
+
     </div>
     {{ template "footer.html" }}
     </body>
