@@ -34,13 +34,12 @@
             <div id="public_keys">
                 {{- range .Service.PublicKeys }}
                     <div id="pgp-{{ .ID }}" class="public_key">
-                        <p>ID: {{ .ID }}</p>
+                        <p>ID: <a href="/keys/{{ .ID }}.txt">{{ .ID }}</a></p>
                         <p class="text-ellipsis">Fingerprint: {{ .Fingerprint }}</p>
                         <p>User ID: {{ .UserID }}</p>
                         {{- if .Description }}
-                            <p>{{ .Description }}</p>
+                            <p><em>{{ .Description }}</em></p>
                         {{ end }}
-                        <textarea cols="68" rows="32" readonly>{{ .Value }}</textarea>
                     </div>
                 {{ end }}
             </div>
