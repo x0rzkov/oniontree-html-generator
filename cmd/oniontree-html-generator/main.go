@@ -6,13 +6,14 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/onionltd/onionltd.github.io-generator/pkg/oniontree/local"
+	"github.com/onionltd/oniontree-tools/pkg/oniontree"
 	"github.com/onionltd/oniontree-tools/pkg/types/service"
 	"html/template"
 	"io/ioutil"
 	"log"
 	"os"
 	"path"
+	"sort"
 	"strings"
 )
 
@@ -192,7 +193,10 @@ func main() {
 		panic(fmt.Errorf("oniontree data not specified"))
 	}
 
-	oniontree := local.NewSource(*data)
+	onionTree, err := oniontree.Open(*data)
+	if err != nil {
+		panic(err)
+	}
 
 	t, err := loadTemplates(*templates)
 	if err != nil {
@@ -210,17 +214,17 @@ func main() {
 	}
 
 	// Generate services
-	serviceIDs, err := oniontree.ListServiceFiles()
+	serviceIDs, err := onionTree.List()
 	if err != nil {
 		panic(err)
 	}
 	services := []service.Service{}
 	for _, id := range serviceIDs {
-		s, err := oniontree.GetServiceFile(id)
+		s, err := onionTree.Get(id)
 		if err != nil {
 			panic(err)
 		}
-		tags, err := oniontree.ListServiceTags(id)
+		tags, err := listServiceTags(onionTree, id)
 		if err != nil {
 			panic(err)
 		}
@@ -242,28 +246,50 @@ func main() {
 	}
 
 	// Generate tags
-	tags, err := oniontree.ListTags()
+	tags, err := onionTree.ListTags()
 	if err != nil {
 		panic(err)
 	}
 	if err = generateTagsHTML(*output, t, tags); err != nil {
 		panic(err)
 	}
-	for _, tag := range tags {
-		serviceIDs, err := oniontree.ListTag(tag)
+	for idx, _ := range tags {
+		tag, err := onionTree.GetTag(tags[idx])
 		if err != nil {
 			panic(err)
 		}
 		services := []service.Service{}
-		for _, id := range serviceIDs {
-			s, err := oniontree.GetServiceFile(id)
+		for _, id := range tag.Services {
+			s, err := onionTree.Get(id)
 			if err != nil {
 				panic(err)
 			}
 			services = append(services, s)
 		}
-		if err := generateTagHTML(*output, t, tag, serviceIDs, services); err != nil {
+		if err := generateTagHTML(*output, t, tag.ID, tag.Services, services); err != nil {
 			panic(err)
 		}
 	}
+}
+
+func listServiceTags(onionTree *oniontree.OnionTree, id string) ([]string, error) {
+	res := []string{}
+	tags, err := onionTree.ListTags()
+	if err != nil {
+		return nil, err
+	}
+	for _, tag := range tags {
+		t, err := onionTree.GetTag(tag)
+		if err != nil {
+			return nil, err
+		}
+		for _, service := range t.Services {
+			if service == id {
+				res = append(res, tag)
+				break
+			}
+		}
+	}
+	sort.Strings(res)
+	return res, nil
 }
