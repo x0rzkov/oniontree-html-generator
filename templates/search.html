@@ -4,10 +4,7 @@
 <head>
     {{ template "head.html" "Search results" }}
     <meta name="description" content="Find and verify working onion addresses. Browse the dark web with confidence.">
-    <script
-            src="https://code.jquery.com/jquery-3.4.1.min.js"
-            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-            crossorigin="anonymous"></script>
+    <script src="/jquery.js"></script>
     <script>
         function newResult(service){
             return $("<li></li>", { "class": "results_result" }).append(
