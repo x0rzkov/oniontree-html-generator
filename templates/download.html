@@ -1,0 +1,30 @@
+{{ define "download.html" }}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        {{ template "head.html" "Download" }}
+        <meta name="description" content="Find and verify working onion addresses. Browse the dark web with confidence.">
+    </head>
+    <body>
+    {{ template "menu.html" }}
+
+    <div id="content">
+        <h1>Download</h1>
+
+        <p>All data published on this site are open source. You can download a copy from <a href="https://github.com/onionltd/oniontree">a repository</a> hosted on GitHub.</p>
+
+        <pre>$ git clone https://github.com/onionltd/oniontree</pre>
+
+        <h3>Bookmarks</h3>
+
+        <p>Download and import <a href="bookmarks.html">OnionTree Bookmarks</a> in your Tor Browser to have immediate access to all popular onion
+            services. For a technical how to, please refer to <a href="https://support.mozilla.org/en-US/kb/import-bookmarks-html-file">Import Bookmarks from an HTML file</a>.</p>
+
+        <p>If you are a Tails user, don't forget to <a href="https://tails.boum.org/doc/first_steps/persistence/configure/index.en.html#index2h2">configure your persistent volume</a>
+            to preserve the bookmarks between reboots.</p>
+    </div>
+
+    {{ template "footer.html" }}
+    </body>
+    </html>
+{{end}}
