@@ -3,6 +3,8 @@
 <html lang="en">
 <head>
     {{ template "head.html" .Service.Name }}
+    <meta property="og:description" content="{{- if .Service.Description }}{{ .Service.Description }}{{ else }}Find and verify working onion addresses. Browse the dark web with confidence.{{ end }}">
+    <meta name="twitter:description" content="{{- if .Service.Description }}{{ .Service.Description }}{{ else }}Find and verify working onion addresses. Browse the dark web with confidence.{{ end }}">
     <meta name="description" content="{{- if .Service.Description }}{{ .Service.Description }}{{ else }}Find and verify working onion addresses. Browse the dark web with confidence.{{ end }}">
 </head>
 <body>

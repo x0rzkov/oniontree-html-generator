@@ -1,0 +1,6 @@
+{{ define "facebook_og.html" }}
+    <meta property="og:image" content="https://oniontree.org/img/header.png">
+    <meta property="og:site_name" content="OnionTree">
+    <meta property="og:type" content="object">
+    <meta property="og:title" content="{{- if . }}{{ . }} &ndash; {{ end }}OnionTree">
+{{ end }}

@@ -2,14 +2,16 @@
     <!DOCTYPE html>
     <html lang="en">
     <head>
-        {{ template "head.html" (printf "Services tagged '%s'" .Name) }}
-        <meta name="description" content="Browse services tagged '{{ .Name }}'.">
+        {{ template "head.html" (printf "Services tagged as '%s'" .Name) }}
+        <meta property="og:description" content="Browse services tagged as '{{ .Name }}'.">
+        <meta name="twitter:description" content="Browse services tagged as '{{ .Name }}'.">
+        <meta name="description" content="Browse services tagged as '{{ .Name }}'.">
     </head>
     <body>
     {{ template "menu.html" }}
 
     <div id="content">
-        <h1>Services tagged '{{ .Name }}'</h1>
+        <h1>Services tagged as '{{ .Name }}'</h1>
 
         {{ range $letter, $data := .Data }}
             <h3>{{ $letter }}</h3>
