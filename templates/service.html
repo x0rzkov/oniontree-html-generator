@@ -36,11 +36,11 @@
             <div id="public_keys">
                 {{- range .Service.PublicKeys }}
                     <div id="pgp-{{ .ID }}" class="public_key">
-                        <p>ID: <a href="../keys/{{ .ID }}.txt">{{ .ID }}</a></p>
-                        <p class="text-ellipsis">Fingerprint: {{ .Fingerprint }}</p>
-                        <p>User ID: {{ .UserID }}</p>
+                        <div>ID: <a href="../keys/{{ .ID }}.txt">{{ .ID }}</a></div>
+                        <div class="text-ellipsis">Fingerprint: {{ .Fingerprint }}</div>
+                        <div>User ID: {{ .UserID }}</div>
                         {{- if .Description }}
-                            <p><em>{{ .Description }}</em></p>
+                            <div><em>{{ .Description }}</em></div>
                         {{ end }}
                     </div>
                 {{ end }}
