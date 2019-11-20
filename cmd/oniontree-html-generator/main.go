@@ -197,6 +197,7 @@ func main() {
 	templates := flag.String("templates", "", "Directory with templates")
 	data := flag.String("oniontree", "", "Oniontree directory")
 	output := flag.String("output", ".", "Output directory")
+	omitTags := flag.String("frontpage-omit-tags", "", "Services tagged with these tags won't show on the frontpage")
 	flag.Parse()
 
 	if *templates == "" {
@@ -204,6 +205,13 @@ func main() {
 	}
 	if *data == "" {
 		panic(fmt.Errorf("oniontree data not specified"))
+	}
+
+	omittedTags := []string{}
+	if *omitTags != "" {
+		for _, t := range strings.Split(*omitTags, ",") {
+			omittedTags = append(omittedTags, strings.TrimSpace(t))
+		}
 	}
 
 	onionTree, err := oniontree.Open(*data)
@@ -236,6 +244,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	ids := []string{}
 	services := []service.Service{}
 	for _, id := range serviceIDs {
 		s, err := onionTree.Get(id)
@@ -257,9 +266,15 @@ func main() {
 				panic(err)
 			}
 		}
+		// Is service tagged with tag that should be omitted from the frontpage? If it is, jump to next service.
+		if containsIgnoredTag(tags, omittedTags...) {
+			log.Printf("Omitting service: services/%s.html (tagged as one of: %s)", id, omittedTags)
+			continue
+		}
+		ids = append(ids, id)
 		services = append(services, s)
 	}
-	if err = generateServicesHTML(*output, t, serviceIDs, services); err != nil {
+	if err = generateServicesHTML(*output, t, ids, services); err != nil {
 		panic(err)
 	}
 
@@ -288,6 +303,17 @@ func main() {
 			panic(err)
 		}
 	}
+}
+
+func containsIgnoredTag(slice []string, tags ...string) bool {
+	for _, item := range slice {
+		for _, t := range tags {
+			if t == item {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func listServiceTags(onionTree *oniontree.OnionTree, id string) ([]string, error) {
