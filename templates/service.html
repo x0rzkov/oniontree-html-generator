@@ -21,8 +21,8 @@
 
         <h2 id="urls">Verified URLs</h2>
 
-        {{ range .Tags }}
-            {{ if eq . "dead" }}
+        {{- range .Tags }}
+            {{- if eq . "dead" }}
                 <p class="warning"><strong>WARNING:</strong> this service has been tagged as <strong>dead</strong>! In case you still see some of the verified URLs
                     as online, refrain from clicking. You risk falling a victim to <strong>phishing</strong>.</p>
             {{ end }}
