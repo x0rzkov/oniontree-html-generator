@@ -28,7 +28,8 @@ var target string
 func loadTemplates(dir string) (*template.Template, error) {
 	log.Printf("Load templates")
 	return template.New("").Funcs(template.FuncMap{
-		"getTarget": tfTarget,
+		"getTarget":  tfTarget,
+		"lastUpdate": tfLastUpdate,
 	}).ParseGlob(dir + "/*.*")
 }
 
