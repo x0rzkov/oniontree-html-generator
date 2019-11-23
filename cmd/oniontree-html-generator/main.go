@@ -17,9 +17,19 @@ import (
 	"strings"
 )
 
+const (
+	targetClearnet string = "clearnet"
+	targetOnion    string = "onion"
+)
+
+var targets = []string{targetClearnet, targetOnion}
+var target string
+
 func loadTemplates(dir string) (*template.Template, error) {
 	log.Printf("Load templates")
-	return template.ParseGlob(dir + "/*.*")
+	return template.New("").Funcs(template.FuncMap{
+		"getTarget": tfTarget,
+	}).ParseGlob(dir + "/*.*")
 }
 
 func generateSearchHTML(output string, t *template.Template) error {
@@ -198,6 +208,7 @@ func main() {
 	data := flag.String("oniontree", "", "Oniontree directory")
 	output := flag.String("output", ".", "Output directory")
 	omitTags := flag.String("frontpage-omit-tags", "", "Services tagged with these tags won't show on the frontpage")
+	flag.StringVar(&target, "target", targetClearnet, fmt.Sprintf("Generate for target [%s]", strings.Join(targets, ",")))
 	flag.Parse()
 
 	if *templates == "" {
