@@ -1,9 +1,11 @@
 {{ define "footer.html" }}
 <div id="footer">
     <div>
-        <small><a href="/download.html" class="muted">Download</a></small>
-        &nbsp;
-       <small><a href="/api.html" class="muted">API</a></small>
+        <small class="muted">Last update: {{ lastUpdate }}</small>
+    </div>
+
+    <div class="minor_links">
+       <small><a href="/api.html">API</a></small>
     </div>
 </div>
 {{ end }}

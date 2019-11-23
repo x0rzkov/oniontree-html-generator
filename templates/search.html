@@ -4,6 +4,7 @@
 <head>
     {{ template "head.html" "Search results" }}
     <meta name="description" content="Find verified onion addresses of popular dark web services.">
+    {{- if eq (getTarget) "clearnet" }}
     <script src="/jquery.js"></script>
     <script>
         function newResult(service){
@@ -24,20 +25,37 @@
             )
         }
     </script>
+    {{ end }}
 </head>
 <body>
     {{ template "menu.html" }}
 
     <div id="content">
-        <h1>Search results for '<span id="name"></span>'</h1>
+        {{- if eq (getTarget) "clearnet" }}
+            <h1>Search results for '<span id="name"></span>'</h1>
 
-        <noscript>Sorry, search requires javascript.</noscript>
+            <noscript>Sorry, search requires javascript.</noscript>
 
-        <ul id="results"></ul>
+            <ul id="results"></ul>
+        {{ else }}
+            <h1>Search disabled</h1>
+
+            <p>We apologize, searching is disabled on .onion site. This function requires <strong>Javascript</strong> to use and works by
+                querying <strong>GitHub's API</strong>. This may potentially decrease your level of privacy.</p>
+
+            <p>If you insist, use the form below
+                that will forward your query to our <strong>clearnet</strong> address.</p>
+
+            <form action="https://oniontree.org/search.html">
+                <input type="text" name="q" value="" placeholder="Search">
+                <input type="submit" value="Search on clearnet">
+            </form>
+        {{ end }}
     </div>
 
     {{ template "footer.html" }}
 
+    {{- if eq (getTarget) "clearnet" }}
     <script>
         // Get ID from filename
         function getID(name) {
@@ -77,6 +95,7 @@
             });
         }
     </script>
+    {{ end }}
 </body>
 </html>
 {{end}}
