@@ -31,7 +31,11 @@
         <ul class="urls">
             {{ range .Service.URLs }}
                 <li class="urls_url text-ellipsis">
-                    <img src="https://hxxpbeam.danwin1210.me/png/{{ . | urlquery }}" class="status_beam" alt="&bullet;">
+                    {{- if eq (getTarget) "clearnet" }}
+                        <img src="https://hxxpbeam.danwin1210.me/png/{{ . | urlquery }}" class="status_beam" alt="&bullet;">
+                    {{ else }}
+                        <img src="http://qf6ycc37agiwvunc757l4427guhdawqngjqs4bfn3kenwszpjnk53sqd.onion/png/{{ . | urlquery }}" class="status_beam" alt="&bullet;">
+                    {{ end }}
                     {{ . }}
                 </li>
             {{ end }}

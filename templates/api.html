@@ -21,7 +21,11 @@
 
         <h3>Example</h3>
 
-        <pre>$ curl https://oniontree.org/services/nytimes.json</pre>
+        {{- if eq (getTarget) "clearnet" }}
+            <pre>$ curl https://oniontree.org/services/nytimes.json</pre>
+        {{ else }}
+            <pre>$ curl https://onions53ehmf4q75.onion/services/nytimes.json</pre>
+        {{ end }}
 
         <h2>PGP keys</h2>
 
@@ -29,8 +33,11 @@
 
         <h3>Example</h3>
 
-        <pre>$ curl https://oniontree.org/keys/E9971784146CCD94.txt</pre>
-
+        {{- if eq (getTarget) "clearnet" }}
+            <pre>$ curl https://oniontree.org/keys/E9971784146CCD94.txt</pre>
+        {{ else }}
+            <pre>$ curl https://onions53ehmf4q75.onion/keys/E9971784146CCD94.txt</pre>
+        {{ end }}
     </div>
     {{ template "footer.html" }}
     </body>
