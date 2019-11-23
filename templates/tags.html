@@ -3,8 +3,10 @@
     <html lang="en">
     <head>
         {{ template "head.html" "Tags" }}
-        <meta property="og:description" content="Find verified onion addresses of popular dark web services.">
-        <meta name="twitter:description" content="Find verified onion addresses of popular dark web services.">
+        {{- if eq (getTarget) "clearnet" }}
+            <meta property="og:description" content="Find verified onion addresses of popular dark web services.">
+            <meta name="twitter:description" content="Find verified onion addresses of popular dark web services.">
+        {{ end }}
         <meta name="description" content="Find verified onion addresses of popular dark web services.">
     </head>
     <body>

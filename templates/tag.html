@@ -3,8 +3,10 @@
     <html lang="en">
     <head>
         {{ template "head.html" (printf "Services tagged as '%s'" .Name) }}
-        <meta property="og:description" content="Browse services tagged as '{{ .Name }}'.">
-        <meta name="twitter:description" content="Browse services tagged as '{{ .Name }}'.">
+        {{- if eq (getTarget) "clearnet" }}
+            <meta property="og:description" content="Browse services tagged as '{{ .Name }}'.">
+            <meta name="twitter:description" content="Browse services tagged as '{{ .Name }}'.">
+        {{ end }}
         <meta name="description" content="Browse services tagged as '{{ .Name }}'.">
     </head>
     <body>

@@ -3,8 +3,10 @@
 <html lang="en">
 <head>
     {{ template "head.html" .Service.Name }}
-    <meta property="og:description" content="{{- if .Service.Description }}{{ .Service.Description }}{{ else }}Find verified onion addresses of popular dark web services.{{ end }}">
-    <meta name="twitter:description" content="{{- if .Service.Description }}{{ .Service.Description }}{{ else }}Find verified onion addresses of popular dark web services.{{ end }}">
+    {{- if eq (getTarget) "clearnet" }}
+        <meta property="og:description" content="{{- if .Service.Description }}{{ .Service.Description }}{{ else }}Find verified onion addresses of popular dark web services.{{ end }}">
+        <meta name="twitter:description" content="{{- if .Service.Description }}{{ .Service.Description }}{{ else }}Find verified onion addresses of popular dark web services.{{ end }}">
+    {{ end }}
     <meta name="description" content="{{- if .Service.Description }}{{ .Service.Description }}{{ else }}Find verified onion addresses of popular dark web services.{{ end }}">
 </head>
 <body>

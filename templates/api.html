@@ -13,7 +13,9 @@
     <div id="content">
         <h1>API</h1>
 
-        <p>This site is hosted on GitHub pages, so as long as GitHub supports CORS, the API should support it too.</p>
+        {{- if eq (getTarget) "clearnet" }}
+            <p>This site is hosted on GitHub pages, so as long as GitHub supports CORS, the API should support it too.</p>
+        {{ end }}
 
         <h2>Services</h2>
 
@@ -24,7 +26,7 @@
         {{- if eq (getTarget) "clearnet" }}
             <pre>$ curl https://oniontree.org/services/nytimes.json</pre>
         {{ else }}
-            <pre>$ curl https://onions53ehmf4q75.onion/services/nytimes.json</pre>
+            <pre>$ curl http://onions53ehmf4q75.onion/services/nytimes.json</pre>
         {{ end }}
 
         <h2>PGP keys</h2>
@@ -36,7 +38,7 @@
         {{- if eq (getTarget) "clearnet" }}
             <pre>$ curl https://oniontree.org/keys/E9971784146CCD94.txt</pre>
         {{ else }}
-            <pre>$ curl https://onions53ehmf4q75.onion/keys/E9971784146CCD94.txt</pre>
+            <pre>$ curl http://onions53ehmf4q75.onion/keys/E9971784146CCD94.txt</pre>
         {{ end }}
     </div>
     {{ template "footer.html" }}
