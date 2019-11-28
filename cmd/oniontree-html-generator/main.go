@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/go-yaml/yaml"
 	"github.com/onionltd/oniontree-tools/pkg/oniontree"
 	"github.com/onionltd/oniontree-tools/pkg/types/service"
 	"html/template"
@@ -30,6 +31,7 @@ func loadTemplates(dir string) (*template.Template, error) {
 	return template.New("").Funcs(template.FuncMap{
 		"getTarget":  tfTarget,
 		"lastUpdate": tfLastUpdate,
+		"toUpper":    tfToUpper,
 	}).ParseGlob(dir + "/*.*")
 }
 
@@ -156,7 +158,7 @@ func generateServicesHTML(output string, t *template.Template, ids []string, ser
 	return nil
 }
 
-func generateServiceHTML(output string, t *template.Template, id string, s service.Service, tags []string) error {
+func generateServiceHTML(output string, t *template.Template, id string, s service.Service, tags []string, alerts []map[string]string) error {
 	log.Printf("Generate service: services/%s.html", id)
 	buffer := bytes.Buffer{}
 	bufio.NewWriter(&buffer)
@@ -164,10 +166,12 @@ func generateServiceHTML(output string, t *template.Template, id string, s servi
 		ID      string
 		Tags    []string
 		Service service.Service
+		Alerts  []map[string]string
 	}{
 		id,
 		tags,
 		s,
+		alerts,
 	}
 	if err := t.ExecuteTemplate(&buffer, "service.html", data); err != nil {
 		return err
@@ -209,6 +213,7 @@ func main() {
 	data := flag.String("oniontree", "", "Oniontree directory")
 	output := flag.String("output", ".", "Output directory")
 	omitTags := flag.String("frontpage-omit-tags", "", "Services tagged with these tags won't show on the frontpage")
+	alertFile := flag.String("alerts", "", "YAML file containing service alerts")
 	flag.StringVar(&target, "target", targetClearnet, fmt.Sprintf("Generate for target [%s]", strings.Join(targets, ",")))
 	flag.Parse()
 
@@ -217,6 +222,17 @@ func main() {
 	}
 	if *data == "" {
 		panic(fmt.Errorf("oniontree data not specified"))
+	}
+
+	alerts := map[string][]map[string]string{}
+	if *alertFile != "" {
+		b, err := ioutil.ReadFile(*alertFile)
+		if err != nil {
+			panic(err)
+		}
+		if err := yaml.Unmarshal(b, &alerts); err != nil {
+			panic(err)
+		}
 	}
 
 	omittedTags := []string{}
@@ -267,7 +283,11 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		if err := generateServiceHTML(*output, t, id, s, tags); err != nil {
+		serviceAlerts, ok := alerts[id]
+		if !ok {
+			serviceAlerts = nil
+		}
+		if err := generateServiceHTML(*output, t, id, s, tags, serviceAlerts); err != nil {
 			panic(err)
 		}
 		if err := generateServiceJSON(*output, id, s); err != nil {

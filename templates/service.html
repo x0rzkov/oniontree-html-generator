@@ -23,20 +23,32 @@
 
         <h2 id="urls">Verified URLs</h2>
 
+        {{- range .Alerts }}
+            {{ range $severity, $msg := . }}
+                <p class="{{ $severity }}"><strong>{{ $severity | toUpper }}:</strong> {{ $msg }}</p>
+            {{ end }}
+        {{ end }}
+
+        {{ $dead := false }}
         {{- range .Tags }}
             {{- if eq . "dead" }}
-                <p class="warning"><strong>WARNING:</strong> this service has been tagged as <strong>dead</strong>! In case you still see some of the verified URLs
-                    as online, refrain from clicking. You risk falling a victim to <strong>phishing</strong>.</p>
+                {{ $dead = true }}
+                <p class="warning"><strong>WARNING:</strong> this service has been tagged as <strong>dead</strong>!
+                    By visiting this site, you risk falling a victim to <strong>phishing</strong>.</p>
             {{ end }}
         {{ end }}
 
         <ul class="urls">
             {{ range .Service.URLs }}
                 <li class="urls_url text-ellipsis">
-                    {{- if eq (getTarget) "clearnet" }}
-                        <img src="https://hxxpbeam.danwin1210.me/png/{{ . | urlquery }}" class="status_beam" alt="&bullet;">
+                    {{- if not $dead }}
+                        {{- if eq (getTarget) "clearnet" }}
+                            <img src="https://hxxpbeam.danwin1210.me/png/{{ . | urlquery }}" class="status_beam" alt="&bullet;">
+                        {{ else }}
+                            <img src="http://qf6ycc37agiwvunc757l4427guhdawqngjqs4bfn3kenwszpjnk53sqd.onion/png/{{ . | urlquery }}" class="status_beam" alt="&bullet;">
+                        {{ end }}
                     {{ else }}
-                        <img src="http://qf6ycc37agiwvunc757l4427guhdawqngjqs4bfn3kenwszpjnk53sqd.onion/png/{{ . | urlquery }}" class="status_beam" alt="&bullet;">
+                        <span class="status_beam">&bullet;</span>
                     {{ end }}
                     {{ . }}
                 </li>
