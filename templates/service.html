@@ -25,7 +25,7 @@
 
         {{- range .Alerts }}
             {{ range $severity, $msg := . }}
-                <p class="{{ $severity }}"><strong>{{ $severity | toUpper }}:</strong> {{ $msg }}</p>
+                <p class="alert {{ $severity }}"><strong>{{ $severity | toUpper }}:</strong> {{ $msg }}</p>
             {{ end }}
         {{ end }}
 
@@ -33,7 +33,7 @@
         {{- range .Tags }}
             {{- if eq . "dead" }}
                 {{ $dead = true }}
-                <p class="warning"><strong>WARNING:</strong> this service has been tagged as <strong>dead</strong>!
+                <p class="alert warning"><strong>WARNING:</strong> this service has been tagged as <strong>dead</strong>!
                     By visiting this site, you risk falling a victim to <strong>phishing</strong>.</p>
             {{ end }}
         {{ end }}
