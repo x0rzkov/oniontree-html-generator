@@ -24,7 +24,6 @@ const (
 )
 
 var targets = []string{targetClearnet, targetOnion}
-var target string
 
 func loadTemplates(dir string, funcs *TF) (*template.Template, error) {
 	log.Printf("Load templates")
@@ -216,7 +215,7 @@ func main() {
 	omitTags := flag.String("frontpage-omit-tags", "", "Services tagged with these tags won't show on the frontpage")
 	alertFile := flag.String("alerts", "", "YAML file containing service alerts")
 	otbVersion := flag.String("otb-version", "", "OnionTree Bookmarks version")
-	flag.StringVar(&target, "target", targetClearnet, fmt.Sprintf("Generate for target [%s]", strings.Join(targets, ",")))
+	target := flag.String("target", targetClearnet, fmt.Sprintf("Generate for target [%s]", strings.Join(targets, ",")))
 	flag.Parse()
 
 	if *templates == "" {
@@ -255,6 +254,7 @@ func main() {
 	t, err := loadTemplates(*templates, &TF{
 		dataPath:   *data,
 		otbVersion: *otbVersion,
+		target:     *target,
 	})
 	if err != nil {
 		panic(err)

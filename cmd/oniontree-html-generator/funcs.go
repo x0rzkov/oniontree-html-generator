@@ -10,10 +10,11 @@ type TF struct {
 	dataPath string
 	// OnionTree Bookmarks version
 	otbVersion string
+	target     string
 }
 
 func (t TF) tfTarget() string {
-	return target
+	return t.target
 }
 
 func (t TF) tfServiceFileLastUpdate(id string) string {
