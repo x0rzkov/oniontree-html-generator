@@ -29,9 +29,10 @@ var target string
 func loadTemplates(dir string, funcs *TF) (*template.Template, error) {
 	log.Printf("Load templates")
 	return template.New("").Funcs(template.FuncMap{
-		"getTarget":         funcs.tfTarget,
-		"toUpper":           funcs.tfToUpper,
-		"serviceLastUpdate": funcs.tfServiceFileLastUpdate,
+		"getTarget":                 funcs.tfTarget,
+		"toUpper":                   funcs.tfToUpper,
+		"serviceLastUpdate":         funcs.tfServiceFileLastUpdate,
+		"onionTreeBookmarksVersion": funcs.tfOnionTreeBookmarksVersion,
 	}).ParseGlob(dir + "/*.*")
 }
 
@@ -214,6 +215,7 @@ func main() {
 	output := flag.String("output", ".", "Output directory")
 	omitTags := flag.String("frontpage-omit-tags", "", "Services tagged with these tags won't show on the frontpage")
 	alertFile := flag.String("alerts", "", "YAML file containing service alerts")
+	otbVersion := flag.String("otb-version", "", "OnionTree Bookmarks version")
 	flag.StringVar(&target, "target", targetClearnet, fmt.Sprintf("Generate for target [%s]", strings.Join(targets, ",")))
 	flag.Parse()
 
@@ -222,6 +224,9 @@ func main() {
 	}
 	if *data == "" {
 		panic(fmt.Errorf("oniontree data not specified"))
+	}
+	if *otbVersion == "" {
+		panic(fmt.Errorf("oniontree bookmarks version not specified"))
 	}
 
 	alerts := map[string][]map[string]string{}
@@ -248,7 +253,8 @@ func main() {
 	}
 
 	t, err := loadTemplates(*templates, &TF{
-		dataPath: *data,
+		dataPath:   *data,
+		otbVersion: *otbVersion,
 	})
 	if err != nil {
 		panic(err)

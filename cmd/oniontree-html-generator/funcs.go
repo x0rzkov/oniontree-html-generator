@@ -8,6 +8,8 @@ import (
 
 type TF struct {
 	dataPath string
+	// OnionTree Bookmarks version
+	otbVersion string
 }
 
 func (t TF) tfTarget() string {
@@ -24,4 +26,8 @@ func (t TF) tfServiceFileLastUpdate(id string) string {
 
 func (t TF) tfToUpper(s string) string {
 	return strings.ToUpper(s)
+}
+
+func (t TF) tfOnionTreeBookmarksVersion() string {
+	return t.otbVersion
 }
