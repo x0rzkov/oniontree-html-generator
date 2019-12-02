@@ -26,12 +26,12 @@ const (
 var targets = []string{targetClearnet, targetOnion}
 var target string
 
-func loadTemplates(dir string) (*template.Template, error) {
+func loadTemplates(dir string, funcs *TF) (*template.Template, error) {
 	log.Printf("Load templates")
 	return template.New("").Funcs(template.FuncMap{
-		"getTarget":  tfTarget,
-		"lastUpdate": tfLastUpdate,
-		"toUpper":    tfToUpper,
+		"getTarget":         funcs.tfTarget,
+		"toUpper":           funcs.tfToUpper,
+		"serviceLastUpdate": funcs.tfServiceFileLastUpdate,
 	}).ParseGlob(dir + "/*.*")
 }
 
@@ -247,7 +247,9 @@ func main() {
 		panic(err)
 	}
 
-	t, err := loadTemplates(*templates)
+	t, err := loadTemplates(*templates, &TF{
+		dataPath: *data,
+	})
 	if err != nil {
 		panic(err)
 	}

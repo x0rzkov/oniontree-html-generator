@@ -1,7 +1,9 @@
 {{ define "footer.html" }}
 <div id="footer">
     <div>
-        <small class="muted">Last update: {{ lastUpdate }}</small>
+        {{ if . }}
+            <small class="muted">Last update: {{ serviceLastUpdate . }}</small>
+        {{ end }}
     </div>
 
     <div class="minor_links">

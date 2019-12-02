@@ -1,18 +1,27 @@
 package main
 
 import (
+	"os"
+	"path"
 	"strings"
-	"time"
 )
 
-func tfTarget() string {
+type TF struct {
+	dataPath string
+}
+
+func (t TF) tfTarget() string {
 	return target
 }
 
-func tfLastUpdate() string {
-	return time.Now().Format("2006-01-02 15:04:05 MST")
+func (t TF) tfServiceFileLastUpdate(id string) string {
+	info, err := os.Stat(path.Join(t.dataPath, "unsorted", id+".yaml"))
+	if err != nil {
+		return ""
+	}
+	return info.ModTime().Format("2006-01-02 15:04:05 MST")
 }
 
-func tfToUpper(s string) string {
+func (t TF) tfToUpper(s string) string {
 	return strings.ToUpper(s)
 }
