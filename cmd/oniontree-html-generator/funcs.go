@@ -32,3 +32,7 @@ func (t TF) tfToUpper(s string) string {
 func (t TF) tfOnionTreeBookmarksVersion() string {
 	return t.otbVersion
 }
+
+func (t TF) tfNL2Space(s string) string {
+	return strings.Replace(s, "\n", " ", -1)
+}
