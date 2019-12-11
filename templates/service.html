@@ -25,7 +25,7 @@
 
         {{- range .Alerts }}
             {{ range $severity, $msg := . }}
-                <p class="alert {{ $severity }}"><strong>{{ $severity | toUpper }}:</strong> {{ $msg }}</p>
+                <p class="alert {{ $severity }}"><strong>{{ $severity | toUpper }}:</strong> {{ $msg | nlToSpace }}</p>
             {{ end }}
         {{ end }}
 
