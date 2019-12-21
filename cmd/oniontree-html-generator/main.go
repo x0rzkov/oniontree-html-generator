@@ -30,7 +30,6 @@ func loadTemplates(dir string, funcs *TF) (*template.Template, error) {
 	return template.New("").Funcs(template.FuncMap{
 		"getTarget":                 funcs.tfTarget,
 		"toUpper":                   funcs.tfToUpper,
-		"serviceLastUpdate":         funcs.tfServiceFileLastUpdate,
 		"onionTreeBookmarksVersion": funcs.tfOnionTreeBookmarksVersion,
 		"nlToSpace":                 funcs.tfNL2Space,
 		"formatPGPFingerprint":      funcs.tfFormatPGPFingerprint,
