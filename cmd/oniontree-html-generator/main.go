@@ -32,7 +32,8 @@ func loadTemplates(dir string, funcs *TF) (*template.Template, error) {
 		"toUpper":                   funcs.tfToUpper,
 		"serviceLastUpdate":         funcs.tfServiceFileLastUpdate,
 		"onionTreeBookmarksVersion": funcs.tfOnionTreeBookmarksVersion,
-		"nlToSpace":                  funcs.tfNL2Space,
+		"nlToSpace":                 funcs.tfNL2Space,
+		"formatPGPFingerprint":      funcs.tfFormatPGPFingerprint,
 	}).ParseGlob(dir + "/*.*")
 }
 

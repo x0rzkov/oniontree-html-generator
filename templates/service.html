@@ -62,7 +62,7 @@
                 {{- range .Service.PublicKeys }}
                     <div id="pgp-{{ .ID }}" class="public_key">
                         <div>ID: <a href="../keys/{{ .ID }}.txt">{{ .ID }}</a></div>
-                        <div class="text-ellipsis">Fingerprint: {{ .Fingerprint }}</div>
+                        <div class="text-ellipsis">Fingerprint: {{ .Fingerprint | formatPGPFingerprint }}</div>
                         <div>User ID: {{ .UserID }}</div>
                         {{- if .Description }}
                             <div><em>{{ .Description }}</em></div>
