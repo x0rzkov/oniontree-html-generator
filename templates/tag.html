@@ -21,7 +21,11 @@
             {{ range $data }}
                 <p>
                     <a href="../services/{{ .ID }}.html">{{ .Service.Name }}</a>
-                    &nbsp;
+                    {{ if (index $.ServiceTags .ID) }}
+                        <small class="muted">({{ index $.ServiceTags .ID | join ", " }})</small>
+                    {{ else }}
+                        &nbsp;
+                    {{ end }}
                     {{ if .Service.URLs }}
                         <a href="../services/{{ .ID }}.html#urls">url</a>
                     {{ end }}

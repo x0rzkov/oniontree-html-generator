@@ -33,3 +33,7 @@ func (t TF) tfFormatPGPFingerprint(s string) string {
 		s[0:4], s[4:8], s[8:12], s[12:16], s[16:20],
 		s[20:24], s[24:28], s[28:32], s[32:36], s[36:40])
 }
+
+func (t TF) tfJoin(delim string, val []string) string {
+	return strings.Join(val, delim)
+}

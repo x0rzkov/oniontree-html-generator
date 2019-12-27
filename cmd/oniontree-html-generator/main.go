@@ -14,7 +14,6 @@ import (
 	"log"
 	"os"
 	"path"
-	"sort"
 	"strings"
 )
 
@@ -33,6 +32,7 @@ func loadTemplates(dir string, funcs *TF) (*template.Template, error) {
 		"onionTreeBookmarksVersion": funcs.tfOnionTreeBookmarksVersion,
 		"nlToSpace":                 funcs.tfNL2Space,
 		"formatPGPFingerprint":      funcs.tfFormatPGPFingerprint,
+		"join":                      funcs.tfJoin,
 	}).ParseGlob(dir + "/*.*")
 }
 
@@ -75,7 +75,7 @@ func generateDownloadHTML(output string, t *template.Template) error {
 	return nil
 }
 
-func generateTagHTML(output string, t *template.Template, name string, ids []string, services []service.Service) error {
+func generateTagHTML(output string, t *template.Template, name string, ids []string, services []service.Service, serviceTags map[string][]string) error {
 	log.Printf("Generate tag: tags/%s.html", name)
 	buffer := bytes.Buffer{}
 	bufio.NewWriter(&buffer)
@@ -85,12 +85,14 @@ func generateTagHTML(output string, t *template.Template, name string, ids []str
 			ID      string
 			Service service.Service
 		}
+		ServiceTags map[string][]string
 	}{
 		name,
 		make(map[string][]struct {
 			ID      string
 			Service service.Service
 		}),
+		serviceTags,
 	}
 	for idx, s := range services {
 		letter := strings.ToUpper(string(s.Name[0]))
@@ -132,22 +134,25 @@ func generateTagsHTML(output string, t *template.Template, tags []string) error 
 	return nil
 }
 
-func generateServicesHTML(output string, t *template.Template, ids []string, services []service.Service) error {
+func generateServicesHTML(output string, t *template.Template, ids []string, services []service.Service, serviceTags map[string][]string) error {
 	log.Printf("Generate services/index.html")
 	buffer := bytes.Buffer{}
 	bufio.NewWriter(&buffer)
 	data := make(map[string][]struct {
-		ID      string
-		Service service.Service
+		ID          string
+		Service     service.Service
+		ServiceTags map[string][]string
 	})
 	for idx, s := range services {
 		letter := strings.ToUpper(string(s.Name[0]))
 		data[letter] = append(data[letter], struct {
-			ID      string
-			Service service.Service
+			ID          string
+			Service     service.Service
+			ServiceTags map[string][]string
 		}{
-			ID:      ids[idx],
-			Service: s,
+			ID:          ids[idx],
+			Service:     s,
+			ServiceTags: serviceTags,
 		})
 	}
 	if err := t.ExecuteTemplate(&buffer, "services.html", data); err != nil {
@@ -281,6 +286,10 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	serviceTags, err := mapServiceTags(onionTree, serviceIDs)
+	if err != nil {
+		panic(err)
+	}
 	ids := []string{}
 	services := []service.Service{}
 	for _, id := range serviceIDs {
@@ -288,15 +297,11 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		tags, err := listServiceTags(onionTree, id)
-		if err != nil {
-			panic(err)
-		}
 		serviceAlerts, ok := alerts[id]
 		if !ok {
 			serviceAlerts = nil
 		}
-		if err := generateServiceHTML(*output, t, id, s, tags, serviceAlerts); err != nil {
+		if err := generateServiceHTML(*output, t, id, s, serviceTags[id], serviceAlerts); err != nil {
 			panic(err)
 		}
 		if err := generateServiceJSON(*output, id, s); err != nil {
@@ -308,14 +313,14 @@ func main() {
 			}
 		}
 		// Is service tagged with tag that should be omitted from the frontpage? If it is, jump to next service.
-		if containsIgnoredTag(tags, omittedTags...) {
+		if containsIgnoredTag(serviceTags[id], omittedTags...) {
 			log.Printf("Omitting service: services/%s.html (tagged as one of: %s)", id, omittedTags)
 			continue
 		}
 		ids = append(ids, id)
 		services = append(services, s)
 	}
-	if err = generateServicesHTML(*output, t, ids, services); err != nil {
+	if err = generateServicesHTML(*output, t, ids, services, serviceTags); err != nil {
 		panic(err)
 	}
 
@@ -340,7 +345,7 @@ func main() {
 			}
 			services = append(services, s)
 		}
-		if err := generateTagHTML(*output, t, tag.ID, tag.Services, services); err != nil {
+		if err := generateTagHTML(*output, t, tag.ID, tag.Services, services, serviceTags); err != nil {
 			panic(err)
 		}
 	}
@@ -357,8 +362,8 @@ func containsIgnoredTag(slice []string, tags ...string) bool {
 	return false
 }
 
-func listServiceTags(onionTree *oniontree.OnionTree, id string) ([]string, error) {
-	res := []string{}
+func mapServiceTags(onionTree *oniontree.OnionTree, ids []string) (map[string][]string, error) {
+	resultMap := make(map[string][]string)
 	tags, err := onionTree.ListTags()
 	if err != nil {
 		return nil, err
@@ -368,13 +373,13 @@ func listServiceTags(onionTree *oniontree.OnionTree, id string) ([]string, error
 		if err != nil {
 			return nil, err
 		}
-		for _, service := range t.Services {
-			if service == id {
-				res = append(res, tag)
-				break
+		for _, serviceID := range t.Services {
+			if _, ok := resultMap[serviceID]; ok {
+				resultMap[serviceID] = append(resultMap[serviceID], tag)
+				continue
 			}
+			resultMap[serviceID] = []string{tag}
 		}
 	}
-	sort.Strings(res)
-	return res, nil
+	return resultMap, nil
 }
